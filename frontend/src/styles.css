@@ -1,0 +1,408 @@
+/* ==========================================================================
+   DropSlot - Smart Delivery Slot & Dispatch Management Portal
+   Vintage Archival & Clean Logistics Editorial Design System
+   ========================================================================== */
+
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+:root {
+  --ds-bg: #f8f6f0;                  /* Archival linen ivory canvas */
+  --ds-surface: #ffffff;             /* Crisp archival card surface */
+  --ds-surface-subtle: #f3efe6;      /* Antique vellum ledger tone */
+  --ds-surface-hover: #ebe5d8;       /* Subtle aged paper hover */
+  --ds-ink-primary: #192028;         /* Deep fountain pen ink */
+  --ds-ink-secondary: #576574;       /* Slate ledger graphite */
+  --ds-ink-muted: #8c98a4;           /* Subtle archival pencil note */
+  --ds-primary: #234561;             /* Heritage merchant naval blue */
+  --ds-primary-hover: #183349;
+  --ds-primary-subtle: #eaf1f7;
+  --ds-accent: #936037;              /* Vintage courier leather & brass */
+  --ds-accent-hover: #784c28;
+  --ds-accent-subtle: #fbf4eb;
+  --ds-border: #ded8cb;              /* Bookbinder rule hairline */
+  --ds-border-light: #ece7dc;        /* Faint ledger guideline */
+  --ds-border-dark: #b8b09f;
+  
+  /* Status Color Codes (Muted Archival Tones, never fluorescent) */
+  --ds-slot-requested-bg: #fdf3e7;
+  --ds-slot-requested-text: #965a12;
+  --ds-slot-requested-border: #ebd1b0;
+
+  --ds-out-delivery-bg: #edf4fb;
+  --ds-out-delivery-text: #1d5b90;
+  --ds-out-delivery-border: #bfd8f0;
+
+  --ds-delivered-bg: #eff7f1;
+  --ds-delivered-text: #216b38;
+  --ds-delivered-border: #bfe3ca;
+
+  --ds-failed-bg: #fbf0f0;
+  --ds-failed-text: #a82e2e;
+  --ds-failed-border: #efc4c4;
+
+  --ds-placed-bg: #f2f3f5;
+  --ds-placed-text: #4e5968;
+  --ds-placed-border: #d4d8de;
+
+  --ds-radius: 4px;
+  --ds-radius-sm: 2px;
+  --ds-font-main: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --ds-font-serif: 'Georgia', 'Cambria', serif;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--ds-bg);
+  color: var(--ds-ink-primary);
+  font-family: var(--ds-font-main);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Master Layout Skeleton */
+.ds-app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-masthead {
+  background-color: #19232d;
+  color: #f3efe6;
+  border-bottom: 2px solid var(--ds-accent);
+  padding: 0.65rem 1.5rem;
+}
+
+.ds-masthead-title {
+  font-family: var(--ds-font-serif);
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ds-masthead-badge {
+  font-family: var(--ds-font-main);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.12);
+  color: #eeddc8;
+  padding: 2px 7px;
+  border-radius: var(--ds-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ds-main-body {
+  flex: 1;
+  display: flex;
+  background-color: var(--ds-bg);
+}
+
+.ds-sidebar {
+  width: 250px;
+  background-color: #f5f2ea;
+  border-right: 1px solid var(--ds-border);
+  padding: 1.25rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ds-content-area {
+  flex: 1;
+  padding: 1.75rem 2.25rem;
+  overflow-y: auto;
+}
+
+/* Ledger Card Surface */
+.ds-card {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.ds-card-header {
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--ds-border);
+  background: var(--ds-surface-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ds-card-title {
+  font-family: var(--ds-font-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ds-ink-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ds-card-body {
+  padding: 1.25rem;
+}
+
+/* Operational Tables */
+.ds-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+
+.ds-table th {
+  background-color: var(--ds-surface-subtle);
+  color: var(--ds-ink-secondary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ds-border);
+  border-top: 1px solid var(--ds-border);
+  white-space: nowrap;
+}
+
+.ds-table td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--ds-border-light);
+  color: var(--ds-ink-primary);
+  font-size: 0.88rem;
+}
+
+.ds-table tbody tr:hover {
+  background-color: var(--ds-surface-hover);
+}
+
+/* Tracking ID Monospace Chip */
+.ds-tracking-chip {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.82rem;
+  background-color: #f1ede3;
+  color: #2b3947;
+  padding: 2px 7px;
+  border-radius: var(--ds-radius-sm);
+  border: 1px solid var(--ds-border);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Status Pills */
+.ds-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 12px;
+  line-height: 1.2;
+}
+
+.ds-status-ORDER_PLACED {
+  background: var(--ds-placed-bg);
+  color: var(--ds-placed-text);
+  border: 1px solid var(--ds-placed-border);
+}
+
+.ds-status-SLOT_REQUESTED {
+  background: var(--ds-slot-requested-bg);
+  color: var(--ds-slot-requested-text);
+  border: 1px solid var(--ds-slot-requested-border);
+}
+
+.ds-status-OUT_FOR_DELIVERY {
+  background: var(--ds-out-delivery-bg);
+  color: var(--ds-out-delivery-text);
+  border: 1px solid var(--ds-out-delivery-border);
+}
+
+.ds-status-DELIVERED {
+  background: var(--ds-delivered-bg);
+  color: var(--ds-delivered-text);
+  border: 1px solid var(--ds-delivered-border);
+}
+
+.ds-status-FAILED_ATTEMPT {
+  background: var(--ds-failed-bg);
+  color: var(--ds-failed-text);
+  border: 1px solid var(--ds-failed-border);
+}
+
+.ds-status-RESCHEDULED {
+  background: #fdf9e8;
+  color: #876211;
+  border: 1px solid #e8dbb0;
+}
+
+/* Slot Time Badges */
+.ds-slot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.77rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--ds-radius-sm);
+  background-color: #f6f3eb;
+  color: var(--ds-ink-primary);
+  border: 1px solid var(--ds-border);
+}
+
+/* Vintage Buttons */
+.ds-btn {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.42rem 0.85rem;
+  border-radius: var(--ds-radius);
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.ds-btn-primary {
+  background-color: var(--ds-primary);
+  color: #ffffff;
+  border-color: #1a3449;
+}
+
+.ds-btn-primary:hover {
+  background-color: var(--ds-primary-hover);
+  color: #ffffff;
+}
+
+.ds-btn-accent {
+  background-color: var(--ds-accent);
+  color: #ffffff;
+  border-color: #784c28;
+}
+
+.ds-btn-accent:hover {
+  background-color: var(--ds-accent-hover);
+  color: #ffffff;
+}
+
+.ds-btn-outline {
+  background-color: transparent;
+  color: var(--ds-ink-primary);
+  border-color: var(--ds-border-dark);
+}
+
+.ds-btn-outline:hover {
+  background-color: var(--ds-surface-hover);
+  color: var(--ds-ink-primary);
+}
+
+.ds-btn-danger-outline {
+  background-color: transparent;
+  color: #a82e2e;
+  border-color: #efc4c4;
+}
+
+.ds-btn-danger-outline:hover {
+  background-color: #fdf2f2;
+  color: #8c1e1e;
+}
+
+.ds-btn-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.55rem;
+}
+
+/* Forms */
+.ds-form-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ds-ink-secondary);
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.ds-form-control {
+  background-color: #ffffff;
+  border: 1px solid var(--ds-border-dark);
+  border-radius: var(--ds-radius);
+  padding: 0.48rem 0.75rem;
+  font-size: 0.88rem;
+  color: var(--ds-ink-primary);
+  width: 100%;
+}
+
+.ds-form-control:focus {
+  outline: none;
+  border-color: var(--ds-primary);
+  box-shadow: 0 0 0 2px rgba(35, 69, 97, 0.15);
+}
+
+/* Modal Backdrops & Dialogs */
+.ds-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(22, 28, 35, 0.55);
+  backdrop-filter: blur(1.5px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.ds-modal-dialog {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border-dark);
+  border-radius: var(--ds-radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  width: 100%;
+  max-width: 580px;
+  overflow: hidden;
+  animation: dsModalFade 0.15s ease-out;
+}
+
+@keyframes dsModalFade {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ngx-pagination vintage stylings */
+.ngx-pagination {
+  margin-bottom: 0 !important;
+  padding-left: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ngx-pagination li {
+  border-radius: var(--ds-radius) !important;
+  font-size: 0.82rem !important;
+}
+
+.ngx-pagination .current {
+  background: var(--ds-primary) !important;
+  color: #ffffff !important;
+}
+
+.ngx-pagination a:hover {
+  background: var(--ds-surface-hover) !important;
+  color: var(--ds-ink-primary) !important;
+}

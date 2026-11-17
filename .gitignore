@@ -1,0 +1,25 @@
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.vscode/
+frontend/*.log
+frontend/npm-debug.log*
+
+# Java / Maven / Spring Boot
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/*.log
+backend/.project
+backend/.classpath
+backend/.settings/
+backend/.idea/
+backend/*.iml
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.bak
