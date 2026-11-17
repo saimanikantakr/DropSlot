@@ -1,0 +1,297 @@
+{
+  "info": {
+    "name": "DropSlot Delivery Portal API",
+    "_postman_id": "dropslot-api-collection-v1",
+    "description": "Comprehensive Postman collection for testing all REST endpoints of the DropSlot Smart Delivery Slot & Dispatch Management Portal (Orders, Fleet Partners, Slot Requests, Statuses).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8088/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Delivery Orders",
+      "item": [
+        {
+          "name": "POST Create Consignment Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"Aarav Mehta\",\n  \"customerPhone\": \"9876543210\",\n  \"customerEmail\": \"aarav.mehta@example.com\",\n  \"customerAddress\": \"Flat 402, Lotus Orchid, HSR Layout Sector 2, Bengaluru\",\n  \"packageDescription\": \"Ergonomic Mechanical Keyboard & Palm Rest\",\n  \"preferredSlot\": \"MIDDAY_EXPRESS\",\n  \"deliveryDate\": \"2026-11-20\",\n  \"deliveryInstructions\": \"Leave with security if not available\",\n  \"assignedPartnerId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            },
+            "description": "Creates a new delivery order. Generates unique tracking number (e.g. DS-A9B8C7D6)."
+          }
+        },
+        {
+          "name": "GET All Orders",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            },
+            "description": "Fetches all consignment orders."
+          }
+        },
+        {
+          "name": "GET Order by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1"]
+            },
+            "description": "Fetches a specific order by its primary key ID."
+          }
+        },
+        {
+          "name": "GET Order by Tracking Number",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/orders/tracking/DS-A1B2C3D4",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "tracking", "DS-A1B2C3D4"]
+            },
+            "description": "Consignee tracking lookup by DS- tracking code."
+          }
+        },
+        {
+          "name": "GET Orders by Customer Query",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/orders/customer?query=98765",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "customer"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "98765"
+                }
+              ]
+            },
+            "description": "Customer search by phone or email."
+          }
+        },
+        {
+          "name": "GET Orders by Partner ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/orders/partner/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "partner", "1"]
+            },
+            "description": "Returns route manifest assigned to a specific courier partner."
+          }
+        },
+        {
+          "name": "PUT Update Consignment Order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"Aarav Mehta Updated\",\n  \"customerPhone\": \"9876543210\",\n  \"customerEmail\": \"aarav.mehta@example.com\",\n  \"customerAddress\": \"Villa 12, Green Glen Layout, Bellandur, Bengaluru\",\n  \"packageDescription\": \"Ergonomic Mechanical Keyboard + Wireless Mouse Bundle\",\n  \"preferredSlot\": \"EVENING_GOLDEN\",\n  \"deliveryDate\": \"2026-11-20\",\n  \"deliveryInstructions\": \"Ring bell twice\",\n  \"assignedPartnerId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1"]
+            },
+            "description": "Updates consignment metadata and recipient address."
+          }
+        },
+        {
+          "name": "PATCH Claim or Reschedule Delivery Slot",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferredSlot\": \"EVENING_GOLDEN\",\n  \"deliveryDate\": \"2026-11-21\",\n  \"deliveryInstructions\": \"Leave at apartment doorstep, call before delivery\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/slot",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1", "slot"]
+            },
+            "description": "Consignee or admin updates slot window: MORNING_STANDARD, MIDDAY_EXPRESS, AFTERNOON_FLEX, EVENING_GOLDEN, NIGHT_PRIORITY, ANYTIME."
+          }
+        },
+        {
+          "name": "PATCH Transition Delivery Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"OUT_FOR_DELIVERY\",\n  \"statusNotes\": \"Courier out on route in HSR sector\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1", "status"]
+            },
+            "description": "Advances status: ORDER_PLACED, SLOT_REQUESTED, ALLOCATED, OUT_FOR_DELIVERY, DELIVERED, FAILED_ATTEMPT, CANCELLED."
+          }
+        },
+        {
+          "name": "PATCH Assign Courier Partner",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/assign/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1", "assign", "2"]
+            },
+            "description": "Assigns order ID 1 to partner ID 2."
+          }
+        },
+        {
+          "name": "DELETE Order",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1"]
+            },
+            "description": "Deletes an order by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Courier & Fleet Partners",
+      "item": [
+        {
+          "name": "POST Register Courier Partner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Suresh Kumar\",\n  \"phone\": \"9876512345\",\n  \"email\": \"suresh.courier@dropslot.com\",\n  \"vehicleType\": \"Electric Cargo Van\",\n  \"serviceZone\": \"East Zone - Indiranagar / Domlur / Old Airport Rd\",\n  \"maxCapacityPerSlot\": 12\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/partners",
+              "host": ["{{baseUrl}}"],
+              "path": ["partners"]
+            },
+            "description": "Registers a new courier with strictly validated 10-digit mobile number."
+          }
+        },
+        {
+          "name": "GET All Fleet Partners",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/partners",
+              "host": ["{{baseUrl}}"],
+              "path": ["partners"]
+            },
+            "description": "Returns roster of all courier partners with capacity limits."
+          }
+        },
+        {
+          "name": "GET Partner by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/partners/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["partners", "1"]
+            },
+            "description": "Fetches single courier profile."
+          }
+        },
+        {
+          "name": "PUT Update Courier Partner",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Suresh Kumar (Senior Courier)\",\n  \"phone\": \"9876512345\",\n  \"email\": \"suresh.courier@dropslot.com\",\n  \"vehicleType\": \"Electric Cargo Van\",\n  \"serviceZone\": \"Central & East Zone - Indiranagar / MG Road\",\n  \"maxCapacityPerSlot\": 15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/partners/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["partners", "1"]
+            },
+            "description": "Updates fleet partner details."
+          }
+        },
+        {
+          "name": "PATCH Toggle Partner Active Status",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/partners/1/toggle-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["partners", "1", "toggle-status"]
+            },
+            "description": "Toggles courier between available (on duty) and off duty."
+          }
+        },
+        {
+          "name": "DELETE Courier Partner",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/partners/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["partners", "1"]
+            },
+            "description": "Removes a fleet partner by ID."
+          }
+        }
+      ]
+    }
+  ]
+}
