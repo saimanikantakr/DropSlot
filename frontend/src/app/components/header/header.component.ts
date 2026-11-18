@@ -53,44 +53,13 @@ import { UserRole } from '../../models/delivery.model';
           </div>
         </div>
 
-        <!-- Persona Role Switcher & User Profile -->
+        <!-- User Profile & Sign Out -->
         <div class="d-flex align-items-center gap-2">
           @if (authService.currentSession; as session) {
-            <div class="d-flex align-items-center gap-1 bg-black bg-opacity-25 px-2 py-1 rounded border border-secondary border-opacity-50">
-              <span class="text-muted small me-1">Role:</span>
-              <button
-                type="button"
-                class="btn btn-sm py-0 px-2 text-nowrap"
-                [class.btn-warning]="session.role === 'admin'"
-                [class.btn-outline-secondary]="session.role !== 'admin'"
-                (click)="switchRole('admin')"
-                title="Switch to Operations Hub Admin"
-              >
-                <i class="bi bi-shield-lock-fill"></i> Hub Admin
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm py-0 px-2 text-nowrap"
-                [class.btn-warning]="session.role === 'partner'"
-                [class.btn-outline-secondary]="session.role !== 'partner'"
-                (click)="switchRole('partner')"
-                title="Switch to Delivery Partner View"
-              >
-                <i class="bi bi-bicycle"></i> Partner
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm py-0 px-2 text-nowrap"
-                [class.btn-warning]="session.role === 'customer'"
-                [class.btn-outline-secondary]="session.role !== 'customer'"
-                (click)="switchRole('customer')"
-                title="Switch to Customer Slot Picker View"
-              >
-                <i class="bi bi-person-fill"></i> Customer
-              </button>
-            </div>
-
-            <div class="d-flex align-items-center gap-2 ps-2 border-start border-secondary">
+            <div class="d-flex align-items-center gap-2 bg-black bg-opacity-25 px-2 py-1 rounded border border-secondary border-opacity-50">
+              <span class="badge" [class.bg-warning]="session.role === 'admin'" [class.bg-primary]="session.role === 'partner'" [class.bg-success]="session.role === 'customer'" [class.text-dark]="session.role === 'admin'">
+                {{ session.role | uppercase }}
+              </span>
               <div class="text-end d-none d-md-block">
                 <div class="small fw-bold text-light lh-1">{{ session.username }}</div>
                 <small class="text-muted" style="font-size: 0.72rem;">{{ session.email }}</small>

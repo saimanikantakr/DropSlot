@@ -11,6 +11,8 @@ import com.dropslot.model.DeliverySlot;
 import com.dropslot.model.DeliveryStatus;
 import com.dropslot.repository.DeliveryOrderRepository;
 import com.dropslot.repository.DeliveryPartnerRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,21 @@ public class DeliveryOrderService {
         return orderRepository.findAll().stream()
             .map(DeliveryOrderResponse::fromEntity)
             .toList();
+    }
+
+    // ================= SERVER-SIDE & QUERY-SIDE PAGINATION =================
+
+    @Transactional(readOnly = true)
+    public Page<DeliveryOrderResponse> getOrdersPaged(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+            .map(DeliveryOrderResponse::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<DeliveryOrderResponse> searchAndFilterOrdersPaged(String query, DeliveryStatus status, Pageable pageable) {
+        String cleanQuery = (query != null && !query.trim().isEmpty()) ? query.trim() : null;
+        return orderRepository.searchAndFilterOrders(cleanQuery, status, pageable)
+            .map(DeliveryOrderResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)

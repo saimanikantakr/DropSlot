@@ -1,8 +1,30 @@
-import { Injectable, signal } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 import { UserRole, UserSession } from '../models/delivery.model';
 
 const STORAGE_KEY = 'dropslot_user_session';
+
+export interface SignUpPayload {
+  fullName: string;
+  email: string;
+  password: string;
+  phone?: string;
+  role: 'ROLE_ADMIN' | 'ROLE_PARTNER' | 'ROLE_CUSTOMER';
+  vehicleType?: string;
+  serviceZone?: string;
+}
+
+export interface AuthBackendResponse {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: 'ROLE_ADMIN' | 'ROLE_PARTNER' | 'ROLE_CUSTOMER';
+  partnerId?: number;
+  token: string;
+  message: string;
+}
 
 const DEMO_ACCOUNTS: Record<UserRole, UserSession> = {
   admin: {
@@ -45,6 +67,9 @@ function getInitialSession(): UserSession {
   providedIn: 'root'
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:8088/api/auth';
+
   private currentSessionSubject = new BehaviorSubject<UserSession | null>(getInitialSession());
   public currentSession$: Observable<UserSession | null> = this.currentSessionSubject.asObservable();
   public currentSessionSignal = signal<UserSession | null>(getInitialSession());
@@ -61,6 +86,51 @@ export class AuthService {
     return this.currentSession ? this.currentSession.role : null;
   }
 
+  // ================= REAL BACKEND REGISTRATION (MySQL Store) =================
+  public realSignUp(payload: SignUpPayload): Observable<UserSession> {
+    return this.http.post<AuthBackendResponse>(`${this.apiUrl}/signup`, payload).pipe(
+      map(res => {
+        const role = this.mapBackendRole(res.role);
+        const session: UserSession = {
+          username: res.fullName,
+          email: res.email,
+          role: role,
+          token: res.token,
+          partnerId: res.partnerId,
+          customerPhone: res.phone
+        };
+        this.saveSession(session);
+        return session;
+      })
+    );
+  }
+
+  // ================= REAL BACKEND LOGIN (MySQL Database Verification) =================
+  public realLogin(email: string, password: string): Observable<UserSession> {
+    return this.http.post<AuthBackendResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
+      map(res => {
+        const role = this.mapBackendRole(res.role);
+        const session: UserSession = {
+          username: res.fullName,
+          email: res.email,
+          role: role,
+          token: res.token,
+          partnerId: res.partnerId,
+          customerPhone: res.phone
+        };
+        this.saveSession(session);
+        return session;
+      })
+    );
+  }
+
+  private mapBackendRole(role: string): UserRole {
+    if (role === 'ROLE_ADMIN') return 'admin';
+    if (role === 'ROLE_PARTNER') return 'partner';
+    return 'customer';
+  }
+
+  // ================= INSTANT TESTING / DEMO ACCESS =================
   public loginWithDemo(role: UserRole): UserSession {
     const session = DEMO_ACCOUNTS[role];
     this.saveSession(session);

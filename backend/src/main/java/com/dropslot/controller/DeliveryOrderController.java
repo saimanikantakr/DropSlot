@@ -4,8 +4,13 @@ import com.dropslot.dto.DeliveryOrderRequest;
 import com.dropslot.dto.DeliveryOrderResponse;
 import com.dropslot.dto.SlotRequestDto;
 import com.dropslot.dto.StatusUpdateDto;
+import com.dropslot.model.DeliveryStatus;
 import com.dropslot.service.DeliveryOrderService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "*")
 public class DeliveryOrderController {
 
     private final DeliveryOrderService orderService;
@@ -26,6 +30,14 @@ public class DeliveryOrderController {
     @GetMapping
     public ResponseEntity<List<DeliveryOrderResponse>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<DeliveryOrderResponse>> getOrdersPaged(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) DeliveryStatus status,
+            @PageableDefault(page = 0, size = 6, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(orderService.searchAndFilterOrdersPaged(query, status, pageable));
     }
 
     @GetMapping("/{id}")

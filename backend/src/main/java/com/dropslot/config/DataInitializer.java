@@ -4,8 +4,12 @@ import com.dropslot.model.DeliveryOrder;
 import com.dropslot.model.DeliveryPartner;
 import com.dropslot.model.DeliverySlot;
 import com.dropslot.model.DeliveryStatus;
+import com.dropslot.model.Role;
+import com.dropslot.model.User;
 import com.dropslot.repository.DeliveryOrderRepository;
 import com.dropslot.repository.DeliveryPartnerRepository;
+import com.dropslot.repository.UserRepository;
+import com.dropslot.service.AuthService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -17,15 +21,29 @@ public class DataInitializer implements CommandLineRunner {
 
     private final DeliveryPartnerRepository partnerRepository;
     private final DeliveryOrderRepository orderRepository;
+    private final UserRepository userRepository;
 
     public DataInitializer(DeliveryPartnerRepository partnerRepository,
-                           DeliveryOrderRepository orderRepository) {
+                           DeliveryOrderRepository orderRepository,
+                           UserRepository userRepository) {
         this.partnerRepository = partnerRepository;
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public void run(String... args) {
+        String defaultPassword = AuthService.hashPassword("password123");
+
+        // Seed or Update Verified Users for all roles and individual partners
+        seedOrUpdateUser("Central Dispatch Hub Admin", "admin@dropslot.com", defaultPassword, "9876500001", Role.ROLE_ADMIN, null);
+        seedOrUpdateUser("Rajesh Sharma (Courier)", "rajesh.delivery@dropslot.com", defaultPassword, "9876543210", Role.ROLE_PARTNER, 1L);
+        seedOrUpdateUser("Priya Nair (Courier)", "priya.delivery@dropslot.com", defaultPassword, "9812345678", Role.ROLE_PARTNER, 2L);
+        seedOrUpdateUser("Amit Kumar (Courier)", "amit.delivery@dropslot.com", defaultPassword, "9765432109", Role.ROLE_PARTNER, 3L);
+        seedOrUpdateUser("Suresh Reddy (Courier)", "suresh.delivery@dropslot.com", defaultPassword, "9945123456", Role.ROLE_PARTNER, 4L);
+        seedOrUpdateUser("Manikanta Reddy (Customer)", "manikanta@gmail.com", defaultPassword, "9876501234", Role.ROLE_CUSTOMER, null);
+        seedOrUpdateUser("Ananya Deshmukh (Customer)", "ananya.d@outlook.com", defaultPassword, "9823456789", Role.ROLE_CUSTOMER, null);
+
         if (partnerRepository.count() > 0) {
             return;
         }
@@ -162,5 +180,22 @@ public class DataInitializer implements CommandLineRunner {
         o8.setStatusNotes("Partner out for delivery in South Delhi sector");
 
         orderRepository.saveAll(List.of(o1, o2, o3, o4, o5, o6, o7, o8));
+    }
+
+    private void seedOrUpdateUser(String fullName, String email, String password, String phone, Role role, Long partnerId) {
+        userRepository.findByEmailIgnoreCase(email).ifPresentOrElse(
+            existing -> {
+                existing.setPassword(password);
+                existing.setFullName(fullName);
+                existing.setRole(role);
+                existing.setPartnerId(partnerId);
+                userRepository.save(existing);
+            },
+            () -> {
+                User user = new User(fullName, email, password, phone, role);
+                user.setPartnerId(partnerId);
+                userRepository.save(user);
+            }
+        );
     }
 }
