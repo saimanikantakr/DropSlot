@@ -47,7 +47,6 @@ public class AuthService {
         user.setRole(request.role());
         user.setEnabled(true);
 
-        // If registering as a Partner, automatically create or link their courier record in fleet
         if (request.role() == Role.ROLE_PARTNER) {
             DeliveryPartner partner = new DeliveryPartner();
             partner.setName(request.fullName().trim());
@@ -89,7 +88,6 @@ public class AuthService {
             .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
     }
 
-    // Secure SHA-256 password hashing with salt
     public static String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -101,7 +99,6 @@ public class AuthService {
     }
 
     private String generateToken(User user) {
-        // Generates token containing user role and identity
         return "DS_TOKEN_" + user.getRole().name() + "_" + UUID.randomUUID().toString().replace("-", "") + "_" + user.getId();
     }
 }

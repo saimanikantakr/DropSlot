@@ -35,7 +35,6 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         String defaultPassword = AuthService.hashPassword("password123");
 
-        // Seed or Update Verified Users for all roles and individual partners
         seedOrUpdateUser("Central Dispatch Hub Admin", "admin@dropslot.com", defaultPassword, "9876500001", Role.ROLE_ADMIN, null);
         seedOrUpdateUser("Rajesh Sharma (Courier)", "rajesh.delivery@dropslot.com", defaultPassword, "9876543210", Role.ROLE_PARTNER, 1L);
         seedOrUpdateUser("Priya Nair (Courier)", "priya.delivery@dropslot.com", defaultPassword, "9812345678", Role.ROLE_PARTNER, 2L);
@@ -48,7 +47,6 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        // Seed Delivery Partners
         DeliveryPartner rajesh = new DeliveryPartner(null, "Rajesh Sharma", "9876543210", "rajesh.delivery@dropslot.com", "EV Cargo Van", "South Bangalore - Koramangala/HSR", 10, true);
         DeliveryPartner priya = new DeliveryPartner(null, "Priya Nair", "9812345678", "priya.delivery@dropslot.com", "Electric Bike", "East Bangalore - Indiranagar/Whitefield", 8, true);
         DeliveryPartner amit = new DeliveryPartner(null, "Amit Kumar", "9765432109", "amit.delivery@dropslot.com", "Motorcycle", "Hyderabad Central - Madhapur/Hitec City", 8, true);
@@ -58,7 +56,6 @@ public class DataInitializer implements CommandLineRunner {
 
         LocalDate today = LocalDate.now();
 
-        // Seed Realistic Orders
         DeliveryOrder o1 = new DeliveryOrder();
         o1.setTrackingNumber("DS-BLR-1092");
         o1.setCustomerName("Manikanta Reddy");

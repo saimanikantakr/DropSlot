@@ -1,0 +1,14 @@
+.slot-card {
+  background: #faf8f5;
+  border-color: var(--ds-border) !important;
+  cursor: pointer;
+  user-select: none;
+}
+.slot-card:hover {
+  background: var(--ds-surface-hover);
+}
+.slot-selected {
+  background: #fdf3e7 !important;
+  border-color: #c9883b !important;
+  box-shadow: 0 0 0 2px rgba(201, 136, 59, 0.25);
+}

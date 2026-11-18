@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, of, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, catchError, of } from 'rxjs';
 import {
   DeliveryOrder,
   DeliveryOrderRequest,
@@ -23,19 +23,14 @@ export class DeliveryService {
   private ordersSubject: BehaviorSubject<DeliveryOrder[]>;
   private partnersSubject: BehaviorSubject<DeliveryPartner[]>;
 
-  // Global shared search query for live two-way matching
   private searchQuerySubject = new BehaviorSubject<string>('');
   public searchQuery$: Observable<string> = this.searchQuerySubject.asObservable();
 
   constructor(private http: HttpClient) {
     this.ordersSubject = new BehaviorSubject<DeliveryOrder[]>(this.loadInitialOrders());
     this.partnersSubject = new BehaviorSubject<DeliveryPartner[]>(this.loadInitialPartners());
-
-    // Try optional background sync with backend if online
     this.syncFromBackend();
   }
-
-  // ================= LIVE SEARCH QUERY =================
 
   public setSearchQuery(q: string): void {
     this.searchQuerySubject.next(q || '');
@@ -44,8 +39,6 @@ export class DeliveryService {
   public get currentSearchQuery(): string {
     return this.searchQuerySubject.value;
   }
-
-  // ================= ORDERS API =================
 
   public getOrders(): Observable<DeliveryOrder[]> {
     return this.ordersSubject.asObservable();
@@ -112,7 +105,6 @@ export class DeliveryService {
     const updated = [newOrder, ...current];
     this.updateOrdersState(updated);
 
-    // Optional background sync
     this.http.post<DeliveryOrder>(`${this.baseUrl}/orders`, req).pipe(catchError(() => of(newOrder))).subscribe();
 
     return of(newOrder);
@@ -233,8 +225,6 @@ export class DeliveryService {
     return of(undefined);
   }
 
-  // ================= PARTNERS API =================
-
   public getPartners(): Observable<DeliveryPartner[]> {
     return this.partnersSubject.asObservable();
   }
@@ -306,8 +296,6 @@ export class DeliveryService {
     this.http.delete<void>(`${this.baseUrl}/partners/${id}`).pipe(catchError(() => of(undefined))).subscribe();
     return of(undefined);
   }
-
-  // ================= STORAGE & SYNC =================
 
   private updateOrdersState(orders: DeliveryOrder[]): void {
     if (typeof window !== 'undefined' && window.localStorage) {

@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { UserRole, UserSession } from '../models/delivery.model';
 
 const STORAGE_KEY = 'dropslot_user_session';
@@ -56,7 +56,6 @@ function getInitialSession(): UserSession {
       try {
         return JSON.parse(raw);
       } catch (e) {
-        // Fallback
       }
     }
   }
@@ -86,7 +85,6 @@ export class AuthService {
     return this.currentSession ? this.currentSession.role : null;
   }
 
-  // ================= REAL BACKEND REGISTRATION (MySQL Store) =================
   public realSignUp(payload: SignUpPayload): Observable<UserSession> {
     return this.http.post<AuthBackendResponse>(`${this.apiUrl}/signup`, payload).pipe(
       map(res => {
@@ -105,7 +103,6 @@ export class AuthService {
     );
   }
 
-  // ================= REAL BACKEND LOGIN (MySQL Database Verification) =================
   public realLogin(email: string, password: string): Observable<UserSession> {
     return this.http.post<AuthBackendResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       map(res => {
@@ -130,7 +127,6 @@ export class AuthService {
     return 'customer';
   }
 
-  // ================= INSTANT TESTING / DEMO ACCESS =================
   public loginWithDemo(role: UserRole): UserSession {
     const session = DEMO_ACCOUNTS[role];
     this.saveSession(session);

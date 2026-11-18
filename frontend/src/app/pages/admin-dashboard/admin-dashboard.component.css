@@ -1,0 +1,11 @@
+.nav-tabs .nav-link {
+  color: var(--ds-ink-secondary);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.nav-tabs .nav-link.active {
+  color: var(--ds-ink-primary);
+  background-color: var(--ds-surface);
+  border-color: var(--ds-border) var(--ds-border) transparent;
+  border-top: 2px solid var(--ds-primary);
+}

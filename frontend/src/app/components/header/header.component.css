@@ -1,0 +1,10 @@
+.ds-masthead {
+  border-bottom: 2px solid var(--ds-accent);
+  background: #17222c;
+}
+.btn-warning {
+  background-color: #c9883b;
+  border-color: #b0742f;
+  color: #1a1610;
+  font-weight: 600;
+}
