@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +15,7 @@ export class LoginComponent {
   authService = inject(AuthService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
 
   authMode: 'login' | 'signup' = 'login';
   showPassword = false;
@@ -78,16 +79,19 @@ export class LoginComponent {
     }
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     const { email, password } = this.loginForm.value;
     this.authService.realLogin(email, password).subscribe({
       next: (session) => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         this.navigateForRole(session.role);
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.message || 'Invalid email or password. Please verify your credentials.';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -99,17 +103,20 @@ export class LoginComponent {
     }
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     const payload: SignUpPayload = this.signUpForm.value;
     this.authService.realSignUp(payload).subscribe({
       next: (session) => {
         this.isLoading = false;
         this.successMessage = `Account created successfully! Redirecting...`;
+        this.cdr.detectChanges();
         setTimeout(() => this.navigateForRole(session.role), 700);
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.message || 'Registration failed. An account with this email may already exist.';
+        this.cdr.detectChanges();
       }
     });
   }
