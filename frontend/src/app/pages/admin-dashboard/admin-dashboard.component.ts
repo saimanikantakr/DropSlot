@@ -259,7 +259,6 @@ export class AdminDashboardComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (created) => {
-            this.orders = [created, ...this.orders];
             this.showAlert(`New consignment ${created.trackingNumber} booked.`);
             this.cdr.detectChanges();
           },
@@ -314,7 +313,6 @@ export class AdminDashboardComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (created) => {
-            this.partners = [...this.partners, created];
             this.showAlert(`New courier partner ${created.name} registered.`);
             this.cdr.detectChanges();
           },

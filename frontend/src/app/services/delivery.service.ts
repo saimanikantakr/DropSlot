@@ -297,18 +297,43 @@ export class DeliveryService {
     return of(undefined);
   }
 
+  private deduplicateOrders(orders: DeliveryOrder[]): DeliveryOrder[] {
+    const seenTracking = new Set<string>();
+    const seenIds = new Set<number>();
+    return orders.filter(o => {
+      if (!o) return false;
+      const tracking = (o.trackingNumber || '').trim().toLowerCase();
+      if (tracking && seenTracking.has(tracking)) return false;
+      if (o.id && seenIds.has(o.id)) return false;
+      if (tracking) seenTracking.add(tracking);
+      if (o.id) seenIds.add(o.id);
+      return true;
+    });
+  }
+
+  private deduplicatePartners(partners: DeliveryPartner[]): DeliveryPartner[] {
+    const seen = new Set<number>();
+    return partners.filter(p => {
+      if (!p || seen.has(p.id)) return false;
+      seen.add(p.id);
+      return true;
+    });
+  }
+
   private updateOrdersState(orders: DeliveryOrder[]): void {
+    const uniqueOrders = this.deduplicateOrders(orders);
     if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(uniqueOrders));
     }
-    this.ordersSubject.next(orders);
+    this.ordersSubject.next(uniqueOrders);
   }
 
   private updatePartnersState(partners: DeliveryPartner[]): void {
+    const uniquePartners = this.deduplicatePartners(partners);
     if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(PARTNERS_STORAGE_KEY, JSON.stringify(partners));
+      localStorage.setItem(PARTNERS_STORAGE_KEY, JSON.stringify(uniquePartners));
     }
-    this.partnersSubject.next(partners);
+    this.partnersSubject.next(uniquePartners);
   }
 
   private loadInitialOrders(): DeliveryOrder[] {
@@ -317,7 +342,7 @@ export class DeliveryService {
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) return this.deduplicateOrders(parsed);
         } catch (e) {}
       }
     }
@@ -330,7 +355,7 @@ export class DeliveryService {
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) return this.deduplicatePartners(parsed);
         } catch (e) {}
       }
     }
